@@ -1,0 +1,26 @@
+[
+  {
+    "Nombre": "Samuel Rocha Vidal",
+    "Horas": 100,
+    "Extra": 5,
+    "Atrasos": 1,
+    "Faltas": 0,
+    "Licencias": 5
+  },
+  {
+    "Nombre": "Enrique Escobar",
+    "Horas": 65,
+    "Extra": 3,
+    "Atrasos": 3,
+    "Faltas": 9,
+    "Licencias": 2
+  },
+  {
+    "Nombre": "Humberto Escobar",
+    "Horas": 90,
+    "Extra": 10,
+    "Atrasos": 0,
+    "Faltas": 0,
+    "Licencias": 0
+  } 
+]
