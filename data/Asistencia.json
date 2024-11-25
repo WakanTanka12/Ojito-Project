@@ -1,0 +1,22 @@
+[
+    {
+        "Nombre": "Enrique Escobar",
+        "Hora_Entrada": "07:20:45",
+        "Estado": "Presente"
+    },
+    {
+        "Nombre": "Humberto Escobar",
+        "Hora_Entrada": "07:40:20",
+        "Estado": "Atraso"
+    },
+    {
+        "Nombre": "Samuel Rocha",
+        "Hora_Entrada": "07:15:30",
+        "Estado": "Presente"
+    },
+    {
+        "Nombre": "Anahy Guarachi",
+        "Hora_Entrada": "",
+        "Estado": "Falta"
+    }
+]
