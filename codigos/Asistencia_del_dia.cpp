@@ -3,7 +3,6 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <string>
-#include <iomanip>
 
 string fecha = "07:15:00";
 
@@ -100,28 +99,53 @@ void Mostrar_Asistencia() {
 }
 
 void Registrar_Asistencia() {
-    string aux = "", HoraEntrada = "07:20:00"; //Cambiar la variable HoraEntrada por una variable global
-    int Hora1 = horaEnSegundos(HoraEntrada), Hora2 = 0, resultado = 0;
-    json archivo;
-    ifstream abrir("Asistencia.json");
-    if (!abrir.is_open()) { // Validacion
-        cout << "No se pudo crear / abrir el archivo";
-        exit(1);
+    string HoraEntrada = "07:35:00";
+
+    // Cargar el archivo JSON
+    fstream archivo("Asistencia.json", ios::in | ios::out); // Modo lectura y escritura
+    if (!archivo.is_open()) {
+        cerr << "No se pudo abrir el archivo Asistencia.json" << endl;
+        return;
     }
-    abrir >> archivo;
-    for (int i = 0; i < 4; i++) {
-        aux = archivo[i]["Hora_Entrada"].get<string>();
-        Hora2 = horaEnSegundos(aux);
-        resultado = Hora1 - Hora2;
-        if (resultado < 0) {
-            archivo[i]["Estado"];
+
+    // Leer el contenido del archivo en un objeto JSON
+    json data;
+    archivo >> data;
+
+    // Calcular la hora de entrada en segundos
+    int Hora1 = horaEnSegundos(HoraEntrada);
+
+    // Editar los estados según la hora de entrada
+    for (auto& empleado : data) {
+        if (empleado.contains("Hora_Entrada")) {
+            string aux = empleado["Hora_Entrada"];
+            if (!aux.empty()) {
+                int Hora2 = horaEnSegundos(aux);
+                int diferencia = Hora1 - Hora2;
+
+                if (diferencia < 0) {
+                    empleado["Estado"] = "Atraso";
+                }
+                else {
+                    empleado["Estado"] = "Presente";
+                }
+            }
         }
     }
+
+    // Volver al inicio del archivo para sobrescribir los datos
+    archivo.clear(); // Limpiar los flags del flujo
+    archivo.seekp(0); // Posicionar el puntero de escritura al inicio
+    archivo << data.dump(4); // Sobrescribir el archivo con sangría de 4 espacios
+
+    cout << "Estados actualizados correctamente en Asistencia.json" << endl;
+
+    archivo.close();
 
 }
 
 int main() {
-    string fecha = "07:15:00";
+    Registrar_Asistencia();
     Mostrar_Asistencia();
 
     return 0;
