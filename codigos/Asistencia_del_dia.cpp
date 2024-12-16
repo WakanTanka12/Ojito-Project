@@ -4,8 +4,6 @@
 #include <fstream>
 #include <string>
 
-string fecha = "07:15:00";
-
 using namespace std;
 using namespace nlohmann;
 
@@ -55,6 +53,7 @@ string segundosAHora(int segundosTotales) {
 }
 
 string calcularDiferencia(const string& hora1, const string& hora2) {
+
     int segundosHora1 = horaEnSegundos(hora1);
     int segundosHora2 = horaEnSegundos(hora2);
 
@@ -64,47 +63,70 @@ string calcularDiferencia(const string& hora1, const string& hora2) {
 
 
 void Mostrar_Asistencia() {
-    string nombre, aux1 = "", hora= " ", horaTolerancia = "07:35:00"; //Cambiar por una variable global que configure la tolerancia de asistencia
-    cout << "Ingrese el nombre del empleado: "<<endl;
+    ifstream abrir("data/ajustes/ajustes.json");
+    if (!abrir.is_open()) {
+        cout << setw(49) << "No se pudo crear / abrir el archivo";
+        exit(1);
+    }
+    json tolerancia;
+    abrir >> tolerancia;
+    abrir.close();
+
+    string nombre, aux1 = "", hora= " ", horaTolerancia = tolerancia["hora_tolerancia"].get<string>(); //Cambiar por una variable global que configure la tolerancia de asistencia
+    cout << setw(46) << "Ingrese el nombre del empleado: ";
+    cin.ignore();
     getline(cin, nombre);
     json archivo;
-    ifstream abrir("Asistencia.json");
+    abrir.open("data/datosDeAsistenciaDiaria/Asistencia.json");
     if (!abrir.is_open()) { // Validacion
-        cout << "No se pudo crear / abrir el archivo";
+        cout << setw(39) << "No se pudo crear / abrir el archivo";
         exit(1);
     }
     abrir >> archivo;
     for (int i = 0; i < 4; i++) {
         if (archivo[i]["Nombre"] == nombre && archivo [i]["Estado"] == "Presente") {
-            cout << "Estado: " << archivo[i]["Estado"].get<string>() << endl;
-            cout << "Hora: " << archivo[i]["Hora_Entrada"].get<string>();
+            cout << setw(22) << "Estado: " << archivo[i]["Estado"].get<string>() << endl;
+            cout << setw(20) << "Hora: " << archivo[i]["Hora_Entrada"].get<string>() << endl;
             break;
         }
         else if (archivo[i]["Nombre"] == nombre && archivo[i]["Estado"] == "Atraso") {
-            cout << "Estado: " << archivo[i]["Estado"].get<string>() << endl;
-            cout << "Hora: " << archivo[i]["Hora_Entrada"].get<string>() << endl;
+            cout << setw(22) << "Estado: " << archivo[i]["Estado"].get<string>() << endl;
+            cout << setw(20) << "Hora: " << archivo[i]["Hora_Entrada"].get<string>() << endl;
             hora = archivo[i]["Hora_Entrada"].get<string>();
             aux1 = calcularDiferencia(horaTolerancia, hora);
-            cout << "El empleado se retraso por: " << aux1;
+            cout << setw(42) << "El empleado se retraso por: " << aux1;
             break;
         }
         else if (archivo[i]["Nombre"] == nombre && archivo[i]["Estado"] == "Falta") {
-            cout << "Estado: " << archivo[i]["Estado"].get<string>() << endl;
-            cout << "Este empleado esta con falta";
+            cout << setw(22) << "Estado: " << archivo[i]["Estado"].get<string>() << endl;
+            cout << setw(42) << "Este empleado esta con falta" << endl;
             break;
         } else if (i == 3 && archivo[i]["Nombre"] != nombre)
-            cout << "Nombre de empleado no encontrado intente de nuevo";
+            cout << setw(63) << "Nombre de empleado no encontrado intente de nuevo" << endl;
     }
     abrir.close();
 }
 
-void Registrar_Asistencia() {
-    string HoraEntrada = "07:35:00";
+void Actualizar_Asistencia() {
+
+    // Cargar la hora de entrada en HoraEntrada
+    ifstream abrir("data/ajustes/ajustes.json");
+
+    if (!abrir.is_open()) { // Validacion
+        cout << setw(39) << "No se pudo crear / abrir el archivo";
+        exit(1);
+    }
+
+    json hora_entrada;
+    abrir >> hora_entrada;
+    abrir.close();
+
+    string HoraEntrada = hora_entrada["hora_entrada"];
 
     // Cargar el archivo JSON
-    fstream archivo("Asistencia.json", ios::in | ios::out); // Modo lectura y escritura
+    fstream archivo("data/datosDeAsistenciaDiaria/Asistencia.json", ios::in | ios::out); // Modo lectura y escritura
     if (!archivo.is_open()) {
-        cerr << "No se pudo abrir el archivo Asistencia.json" << endl;
+        cout << setw(57) << "No se pudo abrir el archivo Asistencia.json" << endl;
         return;
     }
 
@@ -133,20 +155,12 @@ void Registrar_Asistencia() {
         }
     }
 
-    // Volver al inicio del archivo para sobrescribir los datos
     archivo.clear(); // Limpiar los flags del flujo
     archivo.seekp(0); // Posicionar el puntero de escritura al inicio
     archivo << data.dump(4); // Sobrescribir el archivo con sangría de 4 espacios
 
-    cout << "Estados actualizados correctamente en Asistencia.json" << endl;
+    cout << setw(67) << "Estados actualizados correctamente en Asistencia.json" << endl;
 
     archivo.close();
 
-}
-
-int main() {
-    Registrar_Asistencia();
-    Mostrar_Asistencia();
-
-    return 0;
 }
