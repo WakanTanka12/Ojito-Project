@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Horario_en_tiempo_real.h"
 #include "Hora.h"
+#include "inicio_sesion.h"
 #include <random>
 #include <nlohmann/json.hpp>
 #include <fstream>
@@ -53,19 +54,20 @@ void Reloj() {
             hora_actual = ss.str();
         }
 
-        cout << "\rHora actual: " << hora_actual << flush;
+        cout << setw(22) <<"\rHora actual: " << hora_actual << flush;
 
         this_thread::sleep_for(chrono::seconds(1));
     }
 }
 
 void Mostrar_Lecturas_de_Posicion() {
+    mostrar_reloj = true;
     int opcion = 0;
     json archivo1;
     json archivo2;
-    ifstream abrir("data/datosDeAsistencia/Asistencia.json");
+    ifstream abrir("data/datosDeAsistenciaDiaria/Asistencia.json");
     if (!abrir.is_open()) { 
-        cout << "No se pudo crear / abrir el archivo";
+        cout << setw(39) << "No se pudo crear / abrir el archivo";
         exit(1);
     }
     abrir >> archivo1;
@@ -73,20 +75,26 @@ void Mostrar_Lecturas_de_Posicion() {
 
     ifstream abrir2("data/lugaresDeInteres/Lugares_de_Interes.json");
     if (!abrir2.is_open()) {
-        cout << "No se pudo crear / abrir el archivo";
+        cout << setw(39) << "No se pudo crear / abrir el archivo";
         exit(1);
     }
     abrir2 >> archivo2;
     abrir2.close();
 
     while (true) {
+        setColor(11);
+        cout << endl << setw(58) << "--- HORARIO EN TIEMPO REAL ---" << endl;
+        setColor(7);
+        cout << setw(50) << "1. Revisar horarios de los empleados" << endl;
+        cout << setw(41) << "0. Volver al menu principal" << endl;
+        cout << setw(34) << "Ingrese una opcion: " << endl;
 
-        cout << "\t --- Menú de Opciones ---" << endl;
-        cout << "1. Revisar horarios de los empleados" << endl;
-        cout << "0. Salir" << endl;
-        cout << "Ingrese una opción: " << endl;
-
-        cin >> opcion;
+        if (!(cin >> opcion)) {
+            cout << setw(65) << "Entrada no valida. Por favor, introduzca un numero.\n";
+            cin.clear();
+            cin.ignore(10000, '\n');
+            continue;
+        }
 
         if (opcion == 1) { 
             string hora_capturada;
@@ -95,7 +103,7 @@ void Mostrar_Lecturas_de_Posicion() {
                 hora_capturada = hora_actual; 
             } 
 
-            cout << "\tHora de lectura: " << hora_capturada << endl;
+            cout << setw(31) << "Hora de lectura: " << hora_capturada << endl;
 
             int hora2 = horaEnSegundos(hora_capturada); 
 
@@ -104,29 +112,30 @@ void Mostrar_Lecturas_de_Posicion() {
                     string hora5 = archivo1[i]["Hora_Entrada"];
                     int numero = Numero_Random(), hora1 = horaEnSegundos(hora5);
                     if (archivo1[i]["Estado"] == "Presente" && hora2 > hora1) {
-                        cout << "Nombre del empleado: " << archivo1[i]["Nombre"] << ", estado: Presente" << endl;
-                        cout << "Ubicacion: " << archivo2[numero]["Lugar_de_Interes"] << endl;
+                        cout << setw(35) << "Nombre del empleado: " << archivo1[i]["Nombre"] << ", estado: Presente" << endl;
+                        cout << setw(25) << "Ubicacion: " << archivo2[numero]["Lugar_de_Interes"] << endl;
                     }
                     else
                         if (archivo1[i]["Estado"] == "Atraso" && hora2 > hora1) {
-                            cout << "Nombre del empleado: " << archivo1[i]["Nombre"] << ", estado: Atraso" << endl;
-                            cout << "Ubicacion: " << archivo2[numero]["Lugar_de_Interes"] << endl;
+                            cout << setw(25) << "Nombre del empleado: " << archivo1[i]["Nombre"] << ", estado: Atraso" << endl;
+                            cout << setw(25) << "Ubicacion: " << archivo2[numero]["Lugar_de_Interes"] << endl;
                         }
                 }
                 if (archivo1[i]["Estado"] == "Falta") 
-                     cout << "Nombre del empleado: " << archivo1[i]["Nombre"] << ", estado: Falta" << endl;
+                     cout << setw(35) << "Nombre del empleado: " << archivo1[i]["Nombre"] << ", estado: Falta" << endl;
             }
 
         }
         else if (opcion == 0) {
             mostrar_reloj = false;
-            cout << "Saliendo del programa...\n";
+            cout << setw(40) << "Volviendo a Menu Princiapl\n";
             break; // Salir del bucle y terminar el programa
         }
         else {
-            cout << "Opción inválida. Intente nuevamente.\n";
+            cout << setw(50) << "Opcion invalida. Intente nuevamente.\n";
         }
     }
+}
 
 
 }
