@@ -1,0 +1,9 @@
+{
+    "anho_frecuencia": 0,
+    "dia_frecuencia": 7,
+    "distancia_muestreo": 13,
+    "frecuencia_muestreo": "00:05:00",
+    "hora_entrada": "07:20:00",
+    "hora_tolerancia": "7:40:00",
+    "mes_frecuencia": 3
+}
