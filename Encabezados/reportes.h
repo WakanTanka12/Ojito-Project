@@ -6,5 +6,7 @@
 using namespace std;
 
 void crear_reporte();
+void abrir_reporte();
+void menu_reportes();
 
 #endif
